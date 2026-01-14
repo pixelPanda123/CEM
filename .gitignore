@@ -1,0 +1,50 @@
+# =====================
+# Data (DO NOT COMMIT)
+# =====================
+Datasets/
+datasets/
+videos-raw/
+frames/
+
+# Large video & image files
+*.mp4
+*.avi
+*.mov
+*.jpg
+*.jpeg
+*.png
+
+# Serialized experiment outputs
+*.pkl
+*.pickle
+*.npy
+
+# =====================
+# Results / outputs
+# =====================
+results/
+outputs/
+logs/
+
+# =====================
+# Python / environment
+# =====================
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env/
+.envrc/
+
+# =====================
+# Jupyter
+# =====================
+.ipynb_checkpoints/
+
+# =====================
+# OS junk
+# =====================
+.DS_Store
+Thumbs.db
