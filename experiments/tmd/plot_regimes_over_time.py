@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 # Load data
 # -----------------------
 TIME_PATH = "results/tmd/cnn_tmd_times.npy"
+OUTPUT_DIR = "results/tmd"
 
 times = np.load(TIME_PATH)
 
@@ -32,4 +33,5 @@ plt.ylabel("Regime (K=3)")
 plt.title("Temporal Regime Assignment (K=3)")
 
 plt.tight_layout()
+plt.savefig(f"{OUTPUT_DIR}/plot_regimes_over_time.png")
 plt.show()
