@@ -44,6 +44,7 @@ class GaussianHMM:
     def _forward(self, X):
         T = len(X)
         alpha = np.zeros((T, self.n_states))
+        scales = np.zeros(T)
 
         # Initial step
         for i in range(self.n_states):
@@ -51,7 +52,8 @@ class GaussianHMM:
                 X[0], self.means[i], self.covs[i]
             )
 
-        alpha[0] /= alpha[0].sum()
+        scales[0] = alpha[0].sum()
+        alpha[0] /= scales[0]
 
         # Recursion
         for t in range(1, T):
@@ -64,18 +66,19 @@ class GaussianHMM:
                     alpha[t - 1] * self.A[:, j]
                 )
 
-            alpha[t] /= alpha[t].sum()
+            scales[t] = alpha[t].sum()
+            alpha[t] /= scales[t]
 
-        return alpha
+        return alpha, scales
 
     # -----------------------------
     # Backward Algorithm
     # -----------------------------
-    def _backward(self, X):
+    def _backward(self, X, scales):
         T = len(X)
         beta = np.zeros((T, self.n_states))
 
-        beta[-1] = 1.0
+        beta[-1] = 1.0 / scales[-1]
 
         for t in reversed(range(T - 1)):
             for i in range(self.n_states):
@@ -92,7 +95,7 @@ class GaussianHMM:
 
                 beta[t, i] = total
 
-            beta[t] /= beta[t].sum()
+            beta[t] /= scales[t]
 
         return beta
 
@@ -148,15 +151,25 @@ class GaussianHMM:
             weight = gamma[:, i].sum()
             self.means[i] = (gamma[:, i][:, None] * X).sum(axis=0) / weight
 
-        # Update covariances
+        # -----------------------------
+        # Update covariances (Diagonal + Floor)
+        # -----------------------------
+        cov_floor = 0.05  # moderate floor, can tune later
+
         for i in range(self.n_states):
-            cov = np.zeros((d, d))
+            var = np.zeros(d)
+
             for t in range(T):
                 diff = X[t] - self.means[i]
-                cov += gamma[t, i] * np.outer(diff, diff)
+                var += gamma[t, i] * (diff ** 2)
 
-            cov /= gamma[:, i].sum()
-            self.covs[i] = cov + self.eps * np.eye(d)
+            var /= gamma[:, i].sum()
+
+            # Add covariance floor
+            var += cov_floor
+
+            # Convert to diagonal matrix
+            self.covs[i] = np.diag(var)
 
     # -----------------------------
     # Training Loop
@@ -165,8 +178,8 @@ class GaussianHMM:
         self.initialize(X)
 
         for _ in range(n_iter):
-            alpha = self._forward(X)
-            beta = self._backward(X)
+            alpha, scales = self._forward(X)
+            beta = self._backward(X, scales)
             gamma = self._compute_gamma(alpha, beta)
             xi = self._compute_xi(X, alpha, beta)
 

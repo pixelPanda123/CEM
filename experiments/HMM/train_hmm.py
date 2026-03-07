@@ -37,7 +37,11 @@ hmm = GaussianHMM(n_states=2)
 gamma = hmm.fit(X, n_iter=N_ITER)
 
 # Posterior probability of stable regime
-alpha_t = gamma[:, 1]
+# Determine stable state automatically
+stable_state = np.argmin(hmm.means[:, 1])  # variance dimension
+alpha_t = gamma[:, stable_state]
+
+print("Stable state index:", stable_state)
 
 # -----------------------
 # Save artifacts
