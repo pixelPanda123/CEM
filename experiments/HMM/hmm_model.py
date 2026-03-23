@@ -30,8 +30,10 @@ class GaussianHMM:
 
         self.pi = np.ones(self.n_states) / self.n_states
 
-        self.A = np.array([[0.9, 0.1],
-                           [0.1, 0.9]])
+        self.A = np.array([
+            [0.99, 0.01],
+            [0.01, 0.99]
+        ])
 
         indices = np.random.choice(T, self.n_states, replace=False)
         self.means = X[indices]
@@ -143,8 +145,14 @@ class GaussianHMM:
         self.pi = gamma[0]
 
         # Update transition matrix
-        self.A = xi.sum(axis=0)
-        self.A /= self.A.sum(axis=1, keepdims=True)
+        # self.A = xi.sum(axis=0)
+        # self.A /= self.A.sum(axis=1, keepdims=True)
+        # New update
+        new_A = xi.sum(axis=0)
+        new_A /= new_A.sum(axis=1, keepdims=True)
+
+        self.A = 0.8 * self.A + 0.2 * new_A
+
 
         # Update means
         for i in range(self.n_states):

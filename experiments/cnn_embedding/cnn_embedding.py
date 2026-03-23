@@ -56,9 +56,18 @@ for t in range(len(embeddings) - 1):
     diff = np.linalg.norm(embeddings[t + 1] - embeddings[t])
     embedding_motion[t] = diff
 
+embedding_vectors = {}
+
+for t in range(len(embeddings)):
+    embedding_vectors[t] = embeddings[t]
+
+
 
 with open(f"{OUTPUT_DIR}/embedding_motion.pkl", "wb") as f:
     pickle.dump(embedding_motion, f)
+
+with open(f"{OUTPUT_DIR}/embedding_vectors.pkl", "wb") as f:
+    pickle.dump(embedding_vectors, f)
 
 
 fps = 2
