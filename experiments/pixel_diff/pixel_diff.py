@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import pickle
 import os
 
-FRAME_DIR = "Datasets/kvasir-capsule/frames/2f513ad4ee5e4630"
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
+
+FRAME_DIR = f"Datasets/kvasir-capsule/frames/{VIDEO_ID}"
 OUTPUT_DIR = "results/pixel_diff"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 frame_paths = sorted(

@@ -1,12 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os 
 
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 # -----------------------
 # Load data
 # -----------------------
-EMBED_PATH = "results/cnn_embedding/embedding_motion.pkl"
-LABELS_PATH = "results/tmd/cnn_regime_labels_K2.npy"
-TIME_PATH = "results/tmd/cnn_tmd_times.npy"
+EMBED_PATH = f"results/cnn_embedding/{VIDEO_ID}_embedding_motion.pkl"
+LABELS_PATH = f"results/tmd/{VIDEO_ID}_cnn_regime_labels_K2.npy"
+TIME_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_times.npy"
 OUTPUT_DIR = "results/tmd"
 
 import pickle
@@ -50,5 +52,5 @@ plt.ylabel("Cumulative embedding change")
 plt.title("Naive vs Regime-Aware Cumulative Motion")
 plt.legend()
 plt.tight_layout()
-plt.savefig(f"{OUTPUT_DIR}/regime_aware_cumulative_motion.png")
+plt.savefig(f"{OUTPUT_DIR}/{VIDEO_ID}_regime_aware_cumulative_motion.png")
 plt.show()

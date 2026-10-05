@@ -5,7 +5,10 @@ import os
 import pickle
 import matplotlib.pyplot as plt
 
-FRAME_DIR = "Datasets/kvasir-capsule/frames/2f513ad4ee5e4630"
+
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
+
+FRAME_DIR = f"Datasets/kvasir-capsule/frames/{VIDEO_ID}"
 OUTPUT_DIR = "results/optical_flow"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -98,9 +101,9 @@ print("Min:", np.min(flow_vectors), "Max:", np.max(flow_vectors))
 # ================================
 # Save outputs
 # ================================
-np.save(f"{OUTPUT_DIR}/flow_vectors.npy", flow_vectors)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_flow_vectors.npy", flow_vectors)
 
-with open(f"{OUTPUT_DIR}/flow_mag.pkl", "wb") as f:
+with open(f"{OUTPUT_DIR}/{VIDEO_ID}_flow_mag.pkl", "wb") as f:
     pickle.dump(flow_mag, f)
 
 print("\nSaved flow vectors:", flow_vectors.shape)
@@ -117,5 +120,5 @@ plt.xlabel("Time (seconds)")
 plt.ylabel("Mean optical flow magnitude")
 plt.title("Farneback Optical Flow Magnitude Over Time")
 plt.tight_layout()
-plt.savefig(f"{OUTPUT_DIR}/flow_mag.png")
+plt.savefig(f"{OUTPUT_DIR}/{VIDEO_ID}_flow_mag.png")
 plt.show()

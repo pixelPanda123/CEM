@@ -2,11 +2,11 @@ import pickle
 import numpy as np
 
 
-CNN_RAW = "results/cnn_embedding/embedding_motion.pkl"
-CNN_WIN = "results/temporal_windowing/cnn_mean_window_W5.pkl"
+CNN_RAW = f"results/cnn_embedding/{VIDEO_ID}_embedding_motion.pkl"
+CNN_WIN = f"results/temporal_windowing/{VIDEO_ID}_cnn_mean_window_W5.pkl"
 
-VIT_RAW = "results/vit_embedding/embedding_motion.pkl"
-VIT_WIN = "results/temporal_windowing/vit_mean_window_W5.pkl"
+VIT_RAW = f"results/vit_embedding/{VIDEO_ID}_embedding_motion.pkl"
+VIT_WIN = f"results/temporal_windowing/{VIDEO_ID}_vit_mean_window_W5.pkl"
 
 
 def load_raw_variance(path):

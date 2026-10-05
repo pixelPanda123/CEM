@@ -3,12 +3,14 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import os
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 # -----------------------
 # Config
 # -----------------------
-EMBED_PATH = "results/cnn_embedding/embedding_vectors.pkl"
-POSTERIOR_PATH = "results/regime_modeling/cnn_hmm/posterior.npy"
+EMBED_PATH = f"results/cnn_embedding/{VIDEO_ID}_embedding_vectors.pkl"
+POSTERIOR_PATH = f"results/regime_modeling/cnn_hmm/{VIDEO_ID}_posterior.npy"
 OUTPUT_DIR = "results/latent_trajectory"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -79,9 +81,9 @@ for t in range(1, T):
 # -----------------------
 # Save results
 # -----------------------
-np.save(f"{OUTPUT_DIR}/z_no.npy", z_no)
-np.save(f"{OUTPUT_DIR}/z_hard.npy", z_hard)
-np.save(f"{OUTPUT_DIR}/z_soft.npy", z_soft)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_z_no.npy", z_no)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_z_hard.npy", z_hard)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_z_soft.npy", z_soft)
 
 # -----------------------
 # Visualization
@@ -101,7 +103,7 @@ plt.plot(z_soft[:,0], z_soft[:,1])
 plt.title("Soft Gating")
 
 plt.tight_layout()
-plt.savefig(f"{OUTPUT_DIR}/trajectory_comparison.png")
+plt.savefig(f"{OUTPUT_DIR}/{VIDEO_ID}_trajectory_comparison.png")
 plt.show()
 
 print("Latent trajectory computation complete.")

@@ -1,12 +1,14 @@
 import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+import os 
 
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 # -----------------------
 # Load normalized TMD
 # -----------------------
-TMD_PATH = "results/tmd/cnn_tmd_norm.npy"
-TIME_PATH = "results/tmd/cnn_tmd_times.npy"
+TMD_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_norm.npy"
+TIME_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_times.npy"
 
 tmd = np.load(TMD_PATH)
 times = np.load(TIME_PATH)
@@ -43,7 +45,7 @@ for K in [2, 3]:
 # -----------------------
 for K in results:
     np.save(
-        f"results/tmd/cnn_regime_labels_K{K}.npy",
+        f"results/tmd/{VIDEO_ID}_cnn_regime_labels_K{K}.npy",
         results[K]["labels"]
     )
 

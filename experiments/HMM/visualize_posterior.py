@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-alpha = np.load("results/regime_modeling/cnn_hmm/posterior.npy")
+import os
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
+alpha = np.load(f"results/regime_modeling/cnn_hmm/{VIDEO_ID}_posterior.npy")
 
 plt.figure(figsize=(12,4))
 plt.plot(alpha)

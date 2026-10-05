@@ -1,11 +1,13 @@
 import numpy as np
 import pickle
+import os
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 # -----------------------
 # Load data
 # -----------------------
-EMBED_PATH = "results/cnn_embedding/embedding_motion.pkl"
-LABELS_PATH = "results/tmd/cnn_regime_labels_K2.npy"
+EMBED_PATH = f"results/cnn_embedding/{VIDEO_ID}_embedding_motion.pkl"
+LABELS_PATH = f"results/tmd/{VIDEO_ID}_cnn_regime_labels_K2.npy"
 
 with open(EMBED_PATH, "rb") as f:
     embedding_motion = pickle.load(f)

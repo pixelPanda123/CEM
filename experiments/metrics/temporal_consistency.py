@@ -1,5 +1,12 @@
 import numpy as np
+np.random.seed(0)
 import pickle
+import os
+
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
+
+RESULT_DIR = "results/final"
+os.makedirs(RESULT_DIR, exist_ok=True)
 
 # ================================
 # Utility
@@ -7,6 +14,37 @@ import pickle
 
 def trajectory_to_delta(z):
     return z[1:] - z[:-1]
+
+# ================================
+#Temporal Consistency 
+# ================================
+def compute_total_motion(delta_z, k):
+    T = len(delta_z)
+    motions = []
+
+    for t in range(0, T - k):
+        motion = np.sum(np.linalg.norm(delta_z[t:t+k], axis=1))
+        motions.append(motion)
+
+    return np.array(motions)
+
+def compute_metrics_multi_scale(delta_z, k_values=[5, 10, 20, 40]):
+    results = {}
+
+    for k in k_values:
+        drift = compute_drift(delta_z, k)
+        motion = compute_total_motion(delta_z, k)
+
+        efficiency = drift / (motion + 1e-8)
+
+        results[k] = {
+            "drift_mean": np.mean(drift),
+            "drift_std": np.std(drift),
+            "motion_mean": np.mean(motion),
+            "efficiency_mean": np.mean(efficiency),
+        }
+
+    return results
 
 
 # ================================
@@ -57,20 +95,22 @@ def evaluate_trajectory(z, name="method"):
 
     print(f"\n===== {name} =====")
 
-    # Smoothness
     sm = smoothness(delta_z)
     print(f"Smoothness: {sm:.6f}")
 
-    # Drift accumulation
-    drift_results = compute_drift_multi_scale(delta_z)
+    results = compute_metrics_multi_scale(delta_z)
 
-    print("\nCDrift accumulation:")
-    for k, stats in drift_results.items():
-        print(f"k={k} | mean={stats['mean']:.6f} | std={stats['std']:.6f}")
+    print("\nMetrics:")
+    for k, stats in results.items():
+        print(
+            f"k={k} | drift={stats['drift_mean']:.4f} | "
+            f"motion={stats['motion_mean']:.4f} | "
+            f"eff={stats['efficiency_mean']:.4f}"
+        )
 
     return {
         "smoothness": sm,
-        "cce": drift_results
+        "metrics": results
     }
 
 #Random gating (For trajectory checking) 
@@ -83,9 +123,9 @@ def apply_random_gating(delta_z):
 
 if __name__ == "__main__":
     # Load trajectories
-    z_no = np.load("results/latent_trajectory/z_no.npy")
-    z_hard = np.load("results/latent_trajectory/z_hard.npy")
-    z_soft = np.load("results/latent_trajectory/z_soft.npy")
+    z_no = np.load(f"results/latent_trajectory/{VIDEO_ID}_z_no.npy")
+    z_hard = np.load(f"results/latent_trajectory/{VIDEO_ID}_z_hard.npy")
+    z_soft = np.load(f"results/latent_trajectory/{VIDEO_ID}_z_soft.npy")
     # Random gating (apply on RAW motion ideally)
     delta_random = apply_random_gating(trajectory_to_delta(z_no))
 
@@ -94,7 +134,7 @@ if __name__ == "__main__":
     results["no_gating"] = evaluate_trajectory(z_no, "No Gating")
     results["hard_gating"] = evaluate_trajectory(z_hard, "Hard Gating")
     results["soft_gating"] = evaluate_trajectory(z_soft, "Soft Gating")
-    results["Random Gating"] = evaluate_trajectory(np.cumsum(delta_random, axis=0), "Random Gating")
+    results["random_gating"] = evaluate_trajectory(np.cumsum(delta_random, axis=0), "Random Gating")
 
     # ================================
     # Optical Flow Evaluation
@@ -102,7 +142,7 @@ if __name__ == "__main__":
 
     print("\n\n========== OPTICAL FLOW ==========")
 
-    flow = np.load("results/optical_flow/flow_vectors.npy")
+    flow = np.load(f"results/optical_flow/{VIDEO_ID}_flow_vectors.npy")
     delta_flow = flow  # already (T, 2)
     #No Gating 
     delta_no = delta_flow
@@ -114,7 +154,7 @@ if __name__ == "__main__":
     delta_hard = delta_flow * mask[:, None]
 
     #Soft Gating 
-    posterior = np.load("results/regime_modeling/cnn_hmm/posterior.npy")
+    posterior = np.load(f"results/regime_modeling/cnn_hmm/{VIDEO_ID}_posterior.npy")
     print("Flow shape:", delta_flow.shape)
     print("Posterior shape:", posterior.shape)
     T = min(len(delta_flow), len(posterior))
@@ -134,7 +174,23 @@ if __name__ == "__main__":
     z_soft = integrate(delta_soft)
     z_random = integrate(delta_random)
 
-    evaluate_trajectory(z_no, "Flow No Gating")
-    evaluate_trajectory(z_hard, "Flow Hard Gating")
-    evaluate_trajectory(z_soft, "Flow Soft Gating")
-    evaluate_trajectory(z_random, "Flow Random Gating")
+    results["flow_no"] =evaluate_trajectory(z_no, "Flow No Gating")
+    results["flow_hard"] = evaluate_trajectory(z_hard, "Flow Hard Gating")
+    results["flow_soft"] = evaluate_trajectory(z_soft, "Flow Soft Gating")
+    results["flow_random"] = evaluate_trajectory(z_random, "Flow Random Gating")
+
+    final_results = {
+        "video_id": VIDEO_ID,
+        "no_gating": results["no_gating"],
+        "hard_gating": results["hard_gating"],
+        "soft_gating": results["soft_gating"],
+        "random_gating": results["random_gating"],
+        "flow_no_gating": results["flow_no"],
+        "flow_hard_gating": results["flow_hard"],
+        "flow_soft_gating": results["flow_soft"],
+        "flow_random_gating": results["flow_random"],
+    }
+    save_path = os.path.join(RESULT_DIR, f"{VIDEO_ID}_metrics.npy")
+    np.save(save_path, final_results)
+
+    print(f"\nSaved results to: {save_path}")

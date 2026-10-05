@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 # -----------------------
 # Paths

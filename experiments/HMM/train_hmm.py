@@ -3,11 +3,12 @@ import pickle
 import os
 from sklearn.preprocessing import StandardScaler
 from hmm_model import GaussianHMM
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 # -----------------------
 # Config
 # -----------------------
-TMD_PATH = "results/tmd/cnn_tmd_norm.npy"
+TMD_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_norm.npy"
 OUTPUT_DIR = "results/regime_modeling/cnn_hmm"
 N_ITER = 25
 
@@ -46,10 +47,10 @@ print("Stable state index:", stable_state)
 # -----------------------
 # Save artifacts
 # -----------------------
-np.save(f"{OUTPUT_DIR}/posterior.npy", alpha_t)
-np.save(f"{OUTPUT_DIR}/transition_matrix.npy", hmm.A)
-np.save(f"{OUTPUT_DIR}/means.npy", hmm.means)
-np.save(f"{OUTPUT_DIR}/covariances.npy", hmm.covs)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_posterior.npy", alpha_t)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_transition_matrix.npy", hmm.A)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_means.npy", hmm.means)
+np.save(f"{OUTPUT_DIR}/{VIDEO_ID}_covariances.npy", hmm.covs)
 
 with open(f"{OUTPUT_DIR}/params.pkl", "wb") as f:
     pickle.dump({

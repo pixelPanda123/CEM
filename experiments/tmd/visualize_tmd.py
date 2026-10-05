@@ -1,12 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os 
+
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 # -----------------------
 # Load TMD
 # -----------------------
-TMD_PATH = "results/tmd/cnn_tmd_raw.npy"
-TIME_PATH = "results/tmd/cnn_tmd_times.npy"
-TMD_NORM_PATH = "results/tmd/cnn_tmd_norm.npy"
+TMD_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_raw.npy"
+TIME_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_times.npy"
+TMD_NORM_PATH = f"results/tmd/{VIDEO_ID}_cnn_tmd_norm.npy"
 
 tmd = np.load(TMD_PATH)
 tmd_norm = np.load(TMD_NORM_PATH)

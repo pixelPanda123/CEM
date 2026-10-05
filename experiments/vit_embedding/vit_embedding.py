@@ -9,7 +9,9 @@ import pickle
 import matplotlib.pyplot as plt
 
 
-FRAME_DIR = "Datasets/kvasir-capsule/frames/2f513ad4ee5e4630"
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
+
+FRAME_DIR = f"Datasets/kvasir-capsule/frames/{VIDEO_ID}"
 OUTPUT_DIR = "results/vit_embedding"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -61,7 +63,7 @@ for t in range(len(embeddings) - 1):
     embedding_motion[t] = diff
 
 
-with open(f"{OUTPUT_DIR}/embedding_motion.pkl", "wb") as f:
+with open(f"{OUTPUT_DIR}/{VIDEO_ID}_embedding_motion.pkl", "wb") as f:
     pickle.dump(embedding_motion, f)
 
 
@@ -75,5 +77,5 @@ plt.xlabel("Time (seconds)")
 plt.ylabel("Embedding distance ||z(t+1) - z(t)||")
 plt.title("ViT Embedding Motion Signal (ViT-B/16)")
 plt.tight_layout()
-plt.savefig(f"{OUTPUT_DIR}/embedding_motion.png")
+plt.savefig(f"{OUTPUT_DIR}/{VIDEO_ID}_embedding_motion.png")
 plt.show()

@@ -2,9 +2,9 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
-
-EMBED_PATH = "results/cnn_embedding/embedding_motion.pkl"
+EMBED_PATH = f"results/cnn_embedding/{VIDEO_ID}_embedding_motion.pkl"
 OUTPUT_DIR = "results/temporal_windowing"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -33,10 +33,10 @@ var_window = np.array(var_window)
 window_times = np.array(window_times)
 
 
-with open(f"{OUTPUT_DIR}/cnn_mean_window_W{W}.pkl", "wb") as f:
+with open(f"{OUTPUT_DIR}/{VIDEO_ID}_cnn_mean_window_W{W}.pkl", "wb") as f:
     pickle.dump(mean_window, f)
 
-with open(f"{OUTPUT_DIR}/cnn_var_window_W{W}.pkl", "wb") as f:
+with open(f"{OUTPUT_DIR}/{VIDEO_ID}_cnn_var_window_W{W}.pkl", "wb") as f:
     pickle.dump(var_window, f)
 
 
@@ -56,5 +56,5 @@ plt.xlabel("Time (seconds)")
 plt.ylabel("Variance of embedding distance")
 
 plt.tight_layout()
-plt.savefig(f"{OUTPUT_DIR}/cnn_temporal_window_W{W}.png")
+plt.savefig(f"{OUTPUT_DIR}/{VIDEO_ID}_cnn_temporal_window_W{W}.png")
 plt.show()

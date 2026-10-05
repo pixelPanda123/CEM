@@ -1,5 +1,8 @@
 import numpy as np
 from collections import defaultdict
+import os 
+
+VIDEO_ID = os.environ.get("VIDEO_ID", "2f513ad4ee5e4630")
 
 def compute_regime_stats(labels):
     T = len(labels)
@@ -40,8 +43,8 @@ def compute_regime_stats(labels):
 # -----------------------
 # Load regime labels
 # -----------------------
-labels_K2 = np.load("results/tmd/cnn_regime_labels_K2.npy")
-labels_K3 = np.load("results/tmd/cnn_regime_labels_K3.npy")
+labels_K2 = np.load(f"results/tmd/{VIDEO_ID}_cnn_regime_labels_K2.npy")
+labels_K3 = np.load(f"results/tmd/{VIDEO_ID}_cnn_regime_labels_K3.npy")
 
 print("\n===== K = 2 =====")
 dur_K2, flicker_K2, dom_K2 = compute_regime_stats(labels_K2)
